@@ -1,0 +1,4 @@
+all_pages/*
+main/node_modules
+output/*
+main/README.md
