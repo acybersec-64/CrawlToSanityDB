@@ -1,6 +1,6 @@
 all_pages/*
 main/node_modules
 README.md
-output/test_occupation24.ndjson
+output/*
 codes.html
 codes.txt
