@@ -589,7 +589,7 @@ class anzco(object):
         allExport = ('"_createdAt": "2022-11-19T15:51:20Z","_id": "{}","_rev": "q0er4j-pxn-zhv-xak-oune525i0","_type": "occupation","_updatedAt": "2022-11-19T16:21:24Z","anzsco_section": {{"_type": "anzsco_obj", {} ,  {}, {}  {},"alternative_title": {{"en": {}}},"description": {{"en": "{}"}} , "priority_list": [{{"_key": "08e813a79592","_type": "priority_list_obj",{},"year": "2022-01-01"}}],"specialisations": {{"en": {}}},"unit_group": {{"_ref": "{}","_strengthenOnPublish":{{"template":{{"id":"unit_group"}},"type":"unit_group"}},"_type":"reference","_weak":true}}}}    , "assessing_authority":"{}",{},"code":{},"slug": {{"_type": "slug","current": "{}"}},"title":{{"en":"{}"}},{}'.format(id,self.group[0],self.group[2],self.group[1],self.necs,self.alternative_title,self.description,skills_Priority,self.specialisation,self.unit_group_refrence,self.assesin_authority,self.backlogs,current_code,slug,self.title,visa_option)).replace("'",'"').replace(".<br />rn<br />rn"," ")
         ndjson_sanity = ('''{{{},{}}} '''.format(allExport,states)).replace("�","`")
         
-        with open(r"../output/test_occupation24.ndjson","a") as write:
+        with open(r"../output/occupation.ndjson","a") as write:
              write.write(ndjson_sanity+"\n")        
         
     def loop_in_range_codes(self) :
@@ -602,10 +602,10 @@ class anzco(object):
             x.start()    
 
 
-if os.path.exists(r"../output/test_occupation24.ndjson"):
-        os.remove(r"../output/test_occupation24.ndjson")
+if os.path.exists(r"../output/occupation.ndjson"):
+        os.remove(r"../output/occupation.ndjson")
 
-with open(r"../output/test_occupation24.ndjson","a") as wr:
+with open(r"../output/occupation.ndjson","a") as wr:
     wr.write('''{"_createdAt":"2022-11-19T15:35:41Z","_id":"a2557a7b2e94197ff767970b67041697","_rev":"YI3rks3mbRtnzMpdnkW8m6","_type":"visa_type","_updatedAt":"2022-11-19T15:38:07Z","description":{"en":"Skilled Independent"},"title":{"en":"Visa Subclass 189"},"url":{"en":"https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-independent-189"}}
 {"_createdAt":"2022-11-19T15:38:52Z","_id":"cfecdb276f634854f3ef915e2e980c31","_rev":"PJutSls1mvFq6xuKwD4Kfh","_type":"visa_type","_updatedAt":"2022-11-19T15:38:52Z","description":{"en":"Skilled Nominated"},"title":{"en":"Visa Subclass 190"},"url":{"en":"https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-nominated-190"}}
 {"_createdAt":"2022-11-19T15:39:25Z","_id":"559cb990c9dffd8675f6bc2186971dc2","_rev":"YI3rks3mbRtnzMpdnkWNMU","_type":"visa_type","_updatedAt":"2022-11-19T15:39:25Z","description":{"en":"State/Territory nominated"},"title":{"en":"Visa Subclass 491"},"url":{"en":"https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-work-regional-provisional-491"}}
