@@ -22,11 +22,9 @@ class anzco(object):
  
 
     def __init__(self):
-        with open(r"../codes.html","r") as codes:
-            all_codes = codes.read()
-        all_codes = all_codes.replace('"', '')
-        self.regx_find_codes = re.findall("<a href=https://www.anzscosearch.com/(.+?) title", all_codes)
-        self.regx_find_codes.sort()
+        with open(r"../codes.txt","r") as codes:
+            self.allCodes = codes.read().split("\n")
+            
         self.occupation_without_duplicates = []
         global lsc_list
         lsc_list = []
@@ -593,9 +591,9 @@ class anzco(object):
              write.write(ndjson_sanity+"\n")        
         
     def loop_in_range_codes(self) :
-        for i in range(len(self.regx_find_codes)):
+        for i in range(len(self.allCodes)):
             global current_code  
-            current_code = str(self.regx_find_codes[i])
+            current_code = str(self.allCodes[i])
             threads= list()
             x = threading.Thread(target=self.occupation_anzco(), args=(1))
             threads.append(x)

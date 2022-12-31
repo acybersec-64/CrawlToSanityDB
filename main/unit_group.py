@@ -38,10 +38,9 @@ class translate(object):
 class leak_unit_group(object):
     
     def __init__(self):
-        with open("../codes.html","r") as codes:
-            all_codes = codes.read()
-        all_codes = all_codes.replace('"', '')
-        self.regx_find_codes = re.findall("<a href=https://www.anzscosearch.com/(.+?) title", all_codes)
+        
+        with open(r"../codes.txt","r") as codes:
+            self.allCodes = codes.read().split("\n")
 
         self.unit_groups_without_duplicates = []
 
@@ -49,9 +48,9 @@ class leak_unit_group(object):
         
 
         
-        with open("{}".format(self.current_code),"r") as page:
+        with open(r"../all_pages/{}.html".format(self.current_code),"r",encoding="UTF-8") as page:
             raw_page = str(page.read())
-        self.no_qout_page = ((raw_page.replace('"','')).replace("'","")).replace("\\","")
+        self.no_qout_page = ((raw_page.replace('"','')).replace("'","")).replace("\\","").replace("0x9d","").replace("\n","")
         
 
        
@@ -81,12 +80,10 @@ class leak_unit_group(object):
     #   possible visa option should add 
         
     def Skill_level_func(self):
-
         
-        self.skill_level = re.findall("font-size:15px; background-color: #0068ea; color: white; padding: 2px 7px; border-radius: 25px;>(.*?)</span></p>",self.no_qout_page)
-        
+        self.skill_level = re.findall(r"Skill Level &nbsp;<span(.*?)</span>",self.no_qout_page)
+        self.skill_level = re.findall(r">([0-9]+)","".join(self.skill_level))
         self.skill_level = (((str(self.skill_level[0])).replace(")","")).replace(".","")).replace(" ","")
-        
         return self.skill_level
     # get all html from #tab-tab3 page
 
@@ -140,15 +137,17 @@ class leak_unit_group(object):
 
 
     def loop_over(self) :
-        for i in range(len(self.regx_find_codes)):
+        for i in range(len(self.allCodes)):
            
             
-            self.current_code = str(self.regx_find_codes[i])
+            self.current_code = str(self.allCodes[i])
 
             threads= list()   
             x = threading.Thread(target=self.page_per_page(), args=(1))
             threads.append(x)
             x.start()    
+
+
 if os.path.exists("unitgroup.ndjson"):
         os.remove("unitgroup.ndjson")
 
