@@ -32,7 +32,6 @@ let fetcToAnzcoPageByCode = fetch(`https://www.anzscosearch.com/${args._[0]}/`, 
     // ---------------------   saving them ---------------------------------
     fs.writeFile(`../all_pages/${args._[0]}.html`, `${data}`, function (err) {
     if (err) return console.log(err);
-    console.log("done");
     });
     return data;
 }); 

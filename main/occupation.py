@@ -1,10 +1,16 @@
-import hashlib
 import string
 import random
-from slugify import slugify
+import os
+try:
+    import hashlib
+except:
+    os.system("pip install hashlib")
+try:
+    from slugify import slugify
+except:
+    os.system("pip install slugify")
 import re
 import threading
-import os
 import io
 
 class beutifull(object):
@@ -16,7 +22,7 @@ class anzco(object):
  
 
     def __init__(self):
-        with open(r"../all_pages/codes","r") as codes:
+        with open(r"../codes.html","r") as codes:
             all_codes = codes.read()
         all_codes = all_codes.replace('"', '')
         self.regx_find_codes = re.findall("<a href=https://www.anzscosearch.com/(.+?) title", all_codes)

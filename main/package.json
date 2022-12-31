@@ -12,7 +12,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "and": "^0.0.3",
     "fs": "^0.0.1-security",
-    "minimist": "^1.2.7"
+    "i": "^0.3.7",
+    "minimist": "^1.2.7",
+    "npm": "^9.2.0"
   }
 }

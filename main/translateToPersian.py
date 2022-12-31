@@ -1,7 +1,10 @@
 import io
 import re
-from python_translator import Translator
 import os
+try:
+    from python_translator import Translator
+except:
+    os.system("pip install python_translator")
 
 translator = Translator()
 
@@ -208,7 +211,6 @@ class Translate(object):
     def translate(self,SourceWord):
         
         while(True):
-            os.system("color 0a")
             try:        
                 print("translatin")
                 
@@ -233,7 +235,6 @@ class Translate(object):
                 break
             except Exception(KeyboardInterrupt):
                 print("getting error in requesting")
-                os.system("cls")
                 break
 
     
@@ -277,7 +278,6 @@ class Translate(object):
 
 
     def run(self):
-        os.system("color 0d")
         self.DescriptionTranslate()     
         self.TitleTrans()
         self.alterNativ()

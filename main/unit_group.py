@@ -1,9 +1,20 @@
-import hashlib
+
 import re
 import os
 import threading
-from slugify import slugify
-from python_translator import Translator
+try:
+    import hashlib
+except:
+    os.system("pip install hashlib")
+try:
+    from slugify import slugify
+except:
+    os.system("pip install slugify")
+
+try:
+    from python_translator import Translator
+except:
+    os.system("pip install python_translator")
 
 
 class translate(object):
@@ -27,7 +38,7 @@ class translate(object):
 class leak_unit_group(object):
     
     def __init__(self):
-        with open("codes","r") as codes:
+        with open("../codes.html","r") as codes:
             all_codes = codes.read()
         all_codes = all_codes.replace('"', '')
         self.regx_find_codes = re.findall("<a href=https://www.anzscosearch.com/(.+?) title", all_codes)
