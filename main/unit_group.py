@@ -131,7 +131,7 @@ class leak_unit_group(object):
 
             ndjson_sanity = ('''{{"_createdAt":"2022-11-13T13:09:36Z","_id":"{}","_rev":"dy074TCuBZeOysjuEOARqm","_type":"unit_group","_updatedAt":"2022-11-13T13:40:32Z","code":{},"description":{{"en":"{}"}},"skill_level":"{}","tasks":{{"en":{}}},"title":{{"en":"{}"}},"slug": {{"_type": "slug","current": "{}"}}}}'''.format(hash_value,self.unit_group_code,self.description,self.skill_level,self.task,self.title,slug)).replace("'",'"')
             
-            with open("unitgroup.ndjson","a") as write:
+            with open(r"../output/unitgroup.ndjson","a") as write:
                 write.write(ndjson_sanity+"\n")
 
 
@@ -148,8 +148,8 @@ class leak_unit_group(object):
             x.start()    
 
 
-if os.path.exists("unitgroup.ndjson"):
-        os.remove("unitgroup.ndjson")
+if os.path.exists(r"../output/unitgroup.ndjson"):
+        os.remove(r"../output/unitgroup.ndjson")
 
 unit_group = leak_unit_group()
 unit_group.loop_over()
