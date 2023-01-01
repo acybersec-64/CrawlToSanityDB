@@ -424,6 +424,8 @@ class anzco(object):
             return self.backlog_export_all
                                                        
 #   ///////////////////////////     visa sub class 189 - 491 family submitted and invited  //////////////////
+    def numbers(self,s):
+        return [str(match) for match in re.findall(r"\d+", s)]
 
     def eoi_sub_class_189_491f(self,lsc):
         
@@ -434,8 +436,9 @@ class anzco(object):
             self.total_eoi_count_subs = []
             self.eoi_count_inv = []
             self.anz = anzco()
-
-            
+            self.lscIntOnly = "".join(self.numbers(lsc))
+            if self.lscIntOnly == "491":
+                self.lscIntOnly = self.lscIntOnly+"_family"
             between_backlog_tag = re.findall('<!-- TAB 5: BACKLOG -->(.*?)<!-- TAB 6: DAMA -->',no_qout_page)
             # to get eoi submitted
             backlog_eoi_data = re.findall('''eoi{}_sub(.*?)eoi{}_inv'''.format(lsc,lsc),between_backlog_tag[0])
@@ -462,14 +465,16 @@ class anzco(object):
                     how_many_total_subs =  "".join(re.findall('''>TOTAL</td><td>(.*?)</td>''',backlog_eoi_data_points_subs[-1]))
                 else:    
                     how_many_total_subs = ""
+                
+ 
 
                 if (len(self.points_visa_subclass_subs)):
                     self.points_visa_subclass_subs = ((str(self.points_visa_subclass_subs)).replace("[","")).replace("]","")
-                    self.backlog_export_subs = (((''',"total_submitted_{}": "{}","submited_{}": {{"_type": "backlog_numbers_obj",{}}}'''.format(lsc,how_many_total_subs,lsc,self.points_visa_subclass_subs)).replace("'","")).replace("\\",""))
+                    self.backlog_export_subs = (((''',"total_submitted_{}": "{}","submited_{}": {{"_type": "backlog_numbers_obj",{}}}'''.format(self.lscIntOnly,how_many_total_subs,self.lscIntOnly,self.points_visa_subclass_subs)).replace("'","")).replace("\\",""))
                     self.anz.visa_type(lsc)
 
                 else:
-                    self.backlog_export_subs = (''',"total_submitted_{}": "","submited_{}": {{"_type": "backlog_numbers_obj"}}'''.format(lsc,lsc,self.eoi_count_inv))
+                    self.backlog_export_subs = (''',"total_submitted_{}": "","submited_{}": {{"_type": "backlog_numbers_obj"}}'''.format(self.lscIntOnly,self.lscIntOnly,self.eoi_count_inv))
             else:
                 self.backlog_export_subs =  ""
 
@@ -507,11 +512,11 @@ class anzco(object):
                 
                 if (len(self.points_visa_subclass_inv)):
                     self.points_visa_subclass_inv = ((str(self.points_visa_subclass_inv)).replace("[","")).replace("]","")
-                    self.backlog_export_inv = ((''',"total_invited_{}": "{}","invited_{}": {{"_type": "backlog_numbers_obj",{}}}'''.format(lsc,how_many_total_inv,lsc,str(self.points_visa_subclass_inv))).replace("'","")).replace("\\","")
+                    self.backlog_export_inv = ((''',"total_invited_{}": "{}","invited_{}": {{"_type": "backlog_numbers_obj",{}}}'''.format(self.lscIntOnly,how_many_total_inv,self.lscIntOnly,str(self.points_visa_subclass_inv))).replace("'","")).replace("\\","")
                     self.anz.visa_type(lsc)
 
                 else:
-                    self.backlog_export_inv = (''',"total_invited_{}": "","invited_{}": {{"_type": "backlog_numbers_obj"}}'''.format(lsc,lsc,self.eoi_count_inv))
+                    self.backlog_export_inv = (''',"total_invited_{}": "","invited_{}": {{"_type": "backlog_numbers_obj"}}'''.format(self.lscIntOnly,self.lscIntOnly,self.eoi_count_inv))
                 
 
             else:
