@@ -46,7 +46,6 @@ class anzco(object):
             return []
         
         else:
-            print(current_code)
             self.alternative_title = re.findall("<ul style=padding-top:10px; class=padding20>(.*?)</ul>",(self.alternative_title[0]))
             self.alternative_title = re.findall("<li>(.*?)</li>",(self.alternative_title[0]))
             return(self.alternative_title)
@@ -318,12 +317,14 @@ class anzco(object):
                 str(backlog_eoi_data_sub))
                 for i in backlog_eoi_data_submitted_subs:
                     
-                    which_state = re.findall(''';>(.*?)</td><td>''',i)
+                    which_state = re.findall(''';>([A-Z].*?)</td><td>''',i)
 
                     how_many_state = re.findall('''</td><td>(.*?)</td>''',i)
                     if("ANY" in which_state):
                         which_state.remove("ANY")                    
-
+                    
+         
+                    
 
                     for j in range(len(which_state)):
                         result = hashlib.md5(which_state[j].encode('utf-8'))
@@ -331,22 +332,26 @@ class anzco(object):
                         for k in range(len(self.territories)):
                             if (self.which_state == self.territories[k]):
                                 self.state.append(self.which_state)
+                        
                         if (len(self.state)):
+
                             self.anz.territory(self.state)
                         else:
                             self.anz.territory("")
-                        #   todo    = refrence state in by state section to territorys
+
+                        # str(how_many_state)
+                        
                         self.submitted_by_state.append(( ('''{{ "_key": "d3ec69780689","_type": "territory_backlog_obj","eoi_count": "{}","territory": {{"_ref": "{}","_type": "reference"}}}}'''.format(how_many_state[j],self.state[j]))))
                         
-                
-                                # //////////////////////////    export  subs    ///////////////////////////////////
+                         
+
+                                    # //////////////////////////    export  subs    ///////////////////////////////////
                
                 if (len(self.points_visa_subclass_subs)):
                     points_visa_subclass_subs = (str(self.points_visa_subclass_subs).replace("[","")).replace("]","")
                     submitted_by_state = (str(self.submitted_by_state).replace("[","")).replace("]","")
                     submitted_by_state = (''',"submited_by_state_{}": [{}]'''.format(lsc,submitted_by_state))
-
-
+       
                     self.backlog_export_subs = ((('''{},"submited_{}": {{"_type": "backlog_numbers_obj",{}}} '''.format(submitted_by_state,lsc,points_visa_subclass_subs,)).replace("'","")).replace("\\",""))
 
                     self.anz.visa_type(lsc)
@@ -590,7 +595,6 @@ class anzco(object):
         id = result.hexdigest()       
         
         skills_Priority = self.Skills_Priority()
-        
         self.description = self.Description()
         self.title = self.Title()
         self.necs = self.nec()
@@ -612,7 +616,8 @@ class anzco(object):
 
         allExport = ('"_createdAt": "2022-11-19T15:51:20Z","_id": "{}","_rev": "q0er4j-pxn-zhv-xak-oune525i0","_type": "occupation","_updatedAt": "2022-11-19T16:21:24Z","anzsco_section": {{"_type": "anzsco_obj", {} ,  {}, {}  {},"alternative_title": {{"en": {}}},"description": {{"en": "{}"}} , "priority_list": [{{"_key": "08e813a79592","_type": "priority_list_obj",{},"year": "2022-01-01"}}],"specialisations": {{"en": {}}},"unit_group": {{"_ref": "{}","_strengthenOnPublish":{{"template":{{"id":"unit_group"}},"type":"unit_group"}},"_type":"reference","_weak":true}}}}    , "assessing_authority":"{}",{},"code":{},"slug": {{"_type": "slug","current": "{}"}},"title":{{"en":"{}"}},{}'.format(id,self.group[0],self.group[2],self.group[1],self.necs,self.alternative_title,self.description,skills_Priority,self.specialisation,self.unit_group_refrence,self.assesin_authority,self.backlogs,current_code,slug,self.title,visa_option)).replace("'",'"').replace(".<br />rn<br />rn"," ")
         ndjson_sanity = ('''{{{},{}}} '''.format(allExport,states)).replace("�","`")
-        
+        print("still working on it ...")
+
         with open(r"../output/occupation.ndjson","a") as write:
              write.write(ndjson_sanity+"\n")        
         
@@ -646,3 +651,4 @@ with open(r"../output/occupation.ndjson","a") as wr:
 ugly_to = beutifull()
 occupation = anzco()
 occupation.loop_in_range_codes()
+print("\n\n    ocupation.ndjson has been saved in output folder ! ")
