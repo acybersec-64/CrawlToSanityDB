@@ -92,7 +92,7 @@ class leak_unit_group(object):
     
         
     def Description(self):
-        self.description = re.findall("padding: 20px; background-color: #e8e8e8; color: #2d2d2d; margin: 30px 0px; border-radius:5px;>(.*?)</p>",self.no_qout_page)
+        self.description = re.findall("<p style=padding: 20px; background-color: #e8e8e8; color: #2d2d2d; margin: 30px 0px; border-radius: 5px;>(.*?)</p>",self.no_qout_page)
 
         return self.description[0]
 

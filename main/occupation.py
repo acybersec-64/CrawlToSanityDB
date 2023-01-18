@@ -41,13 +41,16 @@ class anzco(object):
     def Alternative_title(self):
     
         self.alternative_title =  re.findall("Alternative Titles -->(.*?)<!-- Specialisations",no_qout_page)
-        
-        self.alternative_title = re.findall("<ul style=padding-top:10px; class=padding20><li>(.*?)<",(self.alternative_title[0]))
-    
-        if (len(self.alternative_title) == 0):
+        isThereALternatives = re.search("There are no",str(self.alternative_title))
+        if isThereALternatives != None:
             return []
+        
         else:
+            print(current_code)
+            self.alternative_title = re.findall("<ul style=padding-top:10px; class=padding20>(.*?)</ul>",(self.alternative_title[0]))
+            self.alternative_title = re.findall("<li>(.*?)</li>",(self.alternative_title[0]))
             return(self.alternative_title)
+        
 
     def Specialisations(self):
         
@@ -124,7 +127,7 @@ class anzco(object):
         eoi_sub_class_190_491 = self.eoi_sub_class_190_491() 
         sub_190 = eoi_sub_class_190_491.export('190')
         sub_491 = eoi_sub_class_190_491.export('491')
-        
+
         back_log_ndjason = ('''"backlog_section": {{"_type": "backlog_obj"{} {} {} {}}}'''.format(sub_189,sub_190,sub_491,sub_491f))
         return back_log_ndjason
     
@@ -289,12 +292,16 @@ class anzco(object):
         #   ///////////////////////////      submitted section in 190 - 491       //////////////////////////////
  
         def submitteds(self,lsc):
+            self.state = []
+            self.points_visa_subclass_subs = []
+            self.submitted_by_state = []
             # to get eoi submitted
-            is_ther_data = re.search('''No EOI data''',str(self.backlog_eoi_data))
+            backlog_eoi_data_sub = re.findall('''eoi{}_sub(.*?)eoi{}_inv'''.format(lsc,lsc),self.between_backlog_tag[0])
+            is_ther_data = re.search('''No EOI data''',str(backlog_eoi_data_sub))
             if(is_ther_data == None):
                
                 backlog_eoi_data_points_subs = re.findall('''EOI Count(.*?)by State''',
-                str(self.backlog_eoi_data))
+                str(backlog_eoi_data_sub))
                 # ////////////////////////////////   points  sub ////////////////////////////////////// 
                 for i in backlog_eoi_data_points_subs:
                     
@@ -307,8 +314,8 @@ class anzco(object):
                         
                         
                 # -/////////////////////////////////// submitteds sub /////////////////////////////////////
-                backlog_eoi_data_submitted_subs = re.findall('''by State(.*?)table''',
-                str(self.backlog_eoi_data))
+                backlog_eoi_data_submitted_subs = re.findall('''by State(.*?</td></tr></table></div>)''',
+                str(backlog_eoi_data_sub))
                 for i in backlog_eoi_data_submitted_subs:
                     
                     which_state = re.findall(''';>(.*?)</td><td>''',i)
@@ -316,6 +323,7 @@ class anzco(object):
                     how_many_state = re.findall('''</td><td>(.*?)</td>''',i)
                     if("ANY" in which_state):
                         which_state.remove("ANY")                    
+
 
                     for j in range(len(which_state)):
                         result = hashlib.md5(which_state[j].encode('utf-8'))
@@ -334,11 +342,13 @@ class anzco(object):
                                 # //////////////////////////    export  subs    ///////////////////////////////////
                
                 if (len(self.points_visa_subclass_subs)):
-                    points_visa_subclass_subs = ((str(self.points_visa_subclass_subs)).replace("[","")).replace("]","")
-                    submitted_by_state = ((str(self.submitted_by_state)).replace("[","")).replace("]","")
+                    points_visa_subclass_subs = (str(self.points_visa_subclass_subs).replace("[","")).replace("]","")
+                    submitted_by_state = (str(self.submitted_by_state).replace("[","")).replace("]","")
                     submitted_by_state = (''',"submited_by_state_{}": [{}]'''.format(lsc,submitted_by_state))
+
+
                     self.backlog_export_subs = ((('''{},"submited_{}": {{"_type": "backlog_numbers_obj",{}}} '''.format(submitted_by_state,lsc,points_visa_subclass_subs,)).replace("'","")).replace("\\",""))
-                    
+
                     self.anz.visa_type(lsc)
                 else:
                     self.backlog_export_subs = (''',"submited_{}" : {{"_type": "backlog_numbers_obj"}}'''.format(lsc,self.eoi_count_inv))
@@ -350,7 +360,9 @@ class anzco(object):
         #   ///////////////////////////      invited section in 190 - 491       //////////////////////////////
         
         def inviteds(self,lsc):
-            
+            self.state = []
+            self.points_visa_subclass_inv = []
+            self.invited_by_state = []
             backlog_eoi_data_inv = re.findall('''eoi{}_inv(.*?)SUBMITTED'''.format(lsc),self.between_backlog_tag[0])
             
             is_ther_data = re.search('''No EOI data''',str(backlog_eoi_data_inv))
@@ -372,53 +384,58 @@ class anzco(object):
                         
               
                
-                backlog_eoi_data_submitted_inv = re.findall('''by State(.*?)table''',
-                str(self.backlog_eoi_data))
+                backlog_eoi_data_submitted_inv = re.findall('''by State(.*?</td></tr></table></div>)''',
+                str(backlog_eoi_data_inv))
                 
                 for i in backlog_eoi_data_submitted_inv:
                     
                     which_state = re.findall(''';>(.*?)</td><td>''',i)
                     how_many_state = re.findall('''</td><td>(.*?)</td>''',i)
+          
                     if("ANY" in which_state):
                         which_state.remove("ANY")
 
                     for j in range(len(which_state)):
                         result = hashlib.md5(which_state[j].encode('utf-8'))
                         self.which_state = result.hexdigest()  
+                        
                         for k in range(len(self.territories)):
                             if (self.which_state == self.territories[k]):
                                 self.state.append(self.which_state)
+
                         
                         if (len(self.state)):
                             self.anz.territory(self.state)
+                        
+
+                                    
                         else:
                             self.anz.territory("")
-                        
-                        
+                     
                             # todo refrence state to territories
                         self.invited_by_state.append(( ('''{{ "_key": "d3ec69780689","_type": "territory_backlog_obj","eoi_count": "{}","territory": {{"_ref": "{}","_type": "reference"}}}}'''.format(how_many_state[j],self.state[j]))))
                          
                                 # //////////////////////////    export  subs    ///////////////////////////////////
                 
                 if (len(self.points_visa_subclass_subs)):
-                    points_visa_subclass_inv = ((str(self.points_visa_subclass_inv)).replace("[","")).replace("]","")
-                    invited_by_state = ((str(self.invited_by_state)).replace("[","")).replace("]","")
-                    invited_by_state = (''',"invited_by_state_{}": [{}]'''.format(lsc,invited_by_state))
                     
-                    self.backlog_export_inv = ((('''submitted_by_state,"invited_{}": {{"_type": "backlog_numbers_obj",{}}} '''.format(invited_by_state,lsc,points_visa_subclass_inv,)).replace("'","")).replace("\\",""))
+                    points_visa_subclass_inv = (str(self.points_visa_subclass_inv).replace("[","")).replace("]","")
+                    invited_by_state = (str(self.invited_by_state).replace("[","")).replace("]","")
+                    invited_by_state = (''',"invited_by_state_{}": [{}]'''.format(lsc,invited_by_state))
 
+                    self.backlog_export_inv = ((('''{},"invited_{}": {{"_type": "backlog_numbers_obj",{}}} '''.format(invited_by_state,lsc,points_visa_subclass_inv)).replace("'","")).replace("\\",""))
+             
 
                     
                     self.anz.visa_type(lsc)
                 else:
                     self.backlog_export_inv = (''',"invited_{}": {{"_type": "backlog_numbers_obj"}}'''.format(lsc))
             else:
-                self.backlog_export_subs =  ""
+                self.backlog_export_inv =  ""
 
-            return self.backlog_export_subs  
+            return self.backlog_export_inv  
         
         def export(self,lsc):
-            
             self.backlog_eoi_data = re.findall('''eoi{}_sub(.*?)eoi{}_inv'''.format(lsc,lsc),self.between_backlog_tag[0])
             self.backlog_export_all = ('''{}{}'''.format(self.submitteds(lsc),self.inviteds(lsc)))
             return self.backlog_export_all
@@ -470,11 +487,11 @@ class anzco(object):
 
                 if (len(self.points_visa_subclass_subs)):
                     self.points_visa_subclass_subs = ((str(self.points_visa_subclass_subs)).replace("[","")).replace("]","")
-                    self.backlog_export_subs = (((''',"total_submitted_{}": "{}","submited_{}": {{"_type": "backlog_numbers_obj",{}}}'''.format(self.lscIntOnly,how_many_total_subs,self.lscIntOnly,self.points_visa_subclass_subs)).replace("'","")).replace("\\",""))
+                    self.backlog_export_subs = (((''',"total_submited_{}": "{}","submited_{}": {{"_type": "backlog_numbers_obj",{}}}'''.format(self.lscIntOnly,how_many_total_subs,self.lscIntOnly,self.points_visa_subclass_subs)).replace("'","")).replace("\\",""))
                     self.anz.visa_type(lsc)
 
                 else:
-                    self.backlog_export_subs = (''',"total_submitted_{}": "","submited_{}": {{"_type": "backlog_numbers_obj"}}'''.format(self.lscIntOnly,self.lscIntOnly,self.eoi_count_inv))
+                    self.backlog_export_subs = (''',"total_submited_{}": "","submited_{}": {{"_type": "backlog_numbers_obj"}}'''.format(self.lscIntOnly,self.lscIntOnly,self.eoi_count_inv))
             else:
                 self.backlog_export_subs =  ""
 
@@ -508,19 +525,19 @@ class anzco(object):
                     for j in range(len(which_points)):
             
                         self.points_visa_subclass_inv.append(( ('''"upper_than_{}": "{}"'''.format(which_points[j],how_many_points[j]))))
-
-                
                 if (len(self.points_visa_subclass_inv)):
                     self.points_visa_subclass_inv = ((str(self.points_visa_subclass_inv)).replace("[","")).replace("]","")
                     self.backlog_export_inv = ((''',"total_invited_{}": "{}","invited_{}": {{"_type": "backlog_numbers_obj",{}}}'''.format(self.lscIntOnly,how_many_total_inv,self.lscIntOnly,str(self.points_visa_subclass_inv))).replace("'","")).replace("\\","")
                     self.anz.visa_type(lsc)
+                    
 
                 else:
                     self.backlog_export_inv = (''',"total_invited_{}": "","invited_{}": {{"_type": "backlog_numbers_obj"}}'''.format(self.lscIntOnly,self.lscIntOnly,self.eoi_count_inv))
                 
 
             else:
-                self.backlog_export_inv=""                  
+                self.backlog_export_inv=""        
+
             self.backlog_export_all = ('''{}{}'''.format(self.backlog_export_subs,self.backlog_export_inv))
             return self.backlog_export_all     
                 
@@ -538,16 +555,18 @@ class anzco(object):
         save_groups = []
         save_groups.append('"major_group"'+":"+nums[0])
         return save_groups[0]
-
-    def Minor_Groups(self,nums):
-        save_groups = []
-        save_groups.append('"minor_group"'+":"+nums[1])
-        return  save_groups[0]
   
     def sub_major_groups(self,nums):
         save_groups = []
-        save_groups.append('"submajor_group"'+":"+nums[2])
+        save_groups.append('"submajor_group"'+":"+nums[1])
         return save_groups[0]
+
+
+    def Minor_Groups(self,nums):
+        save_groups = []
+        
+        save_groups.append('"minor_group"'+":"+nums[2])
+        return  save_groups[0]
 
     def occupation_anzco(self):
         
@@ -589,6 +608,8 @@ class anzco(object):
         slug = "".join(slug)
         # print(slug)
         #                                                           id                                                                                                               self.group[0]          self.group[2]       self.group[1]         self.necs            self.alternatives    self.description                                                     skills_Priority                                     self.specialisation                      self.unit_group_refrence                                                                                                       self.assesin_authority   self.backlogs  current_code                        slug               self.title     visa_option
+           
+
         allExport = ('"_createdAt": "2022-11-19T15:51:20Z","_id": "{}","_rev": "q0er4j-pxn-zhv-xak-oune525i0","_type": "occupation","_updatedAt": "2022-11-19T16:21:24Z","anzsco_section": {{"_type": "anzsco_obj", {} ,  {}, {}  {},"alternative_title": {{"en": {}}},"description": {{"en": "{}"}} , "priority_list": [{{"_key": "08e813a79592","_type": "priority_list_obj",{},"year": "2022-01-01"}}],"specialisations": {{"en": {}}},"unit_group": {{"_ref": "{}","_strengthenOnPublish":{{"template":{{"id":"unit_group"}},"type":"unit_group"}},"_type":"reference","_weak":true}}}}    , "assessing_authority":"{}",{},"code":{},"slug": {{"_type": "slug","current": "{}"}},"title":{{"en":"{}"}},{}'.format(id,self.group[0],self.group[2],self.group[1],self.necs,self.alternative_title,self.description,skills_Priority,self.specialisation,self.unit_group_refrence,self.assesin_authority,self.backlogs,current_code,slug,self.title,visa_option)).replace("'",'"').replace(".<br />rn<br />rn"," ")
         ndjson_sanity = ('''{{{},{}}} '''.format(allExport,states)).replace("�","`")
         
