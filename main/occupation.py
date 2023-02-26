@@ -608,15 +608,21 @@ class anzco(object):
         result = hashlib.md5(self.unit_group_code.encode('utf-8'))
         self.unit_group_refrence = result.hexdigest()  
         slug = list(slugify(self.title))
-        # del slug[0]
+        listTitle = list(self.title)
+        
+        if listTitle[0].lower() != slug[0].lower():
+            del slug[0]
+            
+
         slug = "".join(slug)
+        
         # print(slug)
         #                                                           id                                                                                                               self.group[0]          self.group[2]       self.group[1]         self.necs            self.alternatives    self.description                                                     skills_Priority                                     self.specialisation                      self.unit_group_refrence                                                                                                       self.assesin_authority   self.backlogs  current_code                        slug               self.title     visa_option
            
 
         allExport = ('"_createdAt": "2022-11-19T15:51:20Z","_id": "{}","_rev": "q0er4j-pxn-zhv-xak-oune525i0","_type": "occupation","_updatedAt": "2022-11-19T16:21:24Z","anzsco_section": {{"_type": "anzsco_obj", {} ,  {}, {}  {},"alternative_title": {{"en": {}}},"description": {{"en": "{}"}} , "priority_list": [{{"_key": "08e813a79592","_type": "priority_list_obj",{},"year": "2022-01-01"}}],"specialisations": {{"en": {}}},"unit_group": {{"_ref": "{}","_strengthenOnPublish":{{"template":{{"id":"unit_group"}},"type":"unit_group"}},"_type":"reference","_weak":true}}}}    , "assessing_authority":"{}",{},"code":{},"slug": {{"_type": "slug","current": "{}"}},"title":{{"en":"{}"}},{}'.format(id,self.group[0],self.group[2],self.group[1],self.necs,self.alternative_title,self.description,skills_Priority,self.specialisation,self.unit_group_refrence,self.assesin_authority,self.backlogs,current_code,slug,self.title,visa_option)).replace("'",'"').replace(".<br />rn<br />rn"," ")
-        ndjson_sanity = ('''{{{},{}}} '''.format(allExport,states)).replace("�","`")
-        print("still working on it ...")
+        ndjson_sanity = ('''{{{},{}}} '''.format(allExport,states))
+        print("still working on it ..."+"\n")
 
         with open(r"../output/occupation.ndjson","a") as write:
              write.write(ndjson_sanity+"\n")        
