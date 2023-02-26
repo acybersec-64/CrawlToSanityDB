@@ -608,7 +608,7 @@ class anzco(object):
         result = hashlib.md5(self.unit_group_code.encode('utf-8'))
         self.unit_group_refrence = result.hexdigest()  
         slug = list(slugify(self.title))
-        del slug[0]
+        # del slug[0]
         slug = "".join(slug)
         # print(slug)
         #                                                           id                                                                                                               self.group[0]          self.group[2]       self.group[1]         self.necs            self.alternatives    self.description                                                     skills_Priority                                     self.specialisation                      self.unit_group_refrence                                                                                                       self.assesin_authority   self.backlogs  current_code                        slug               self.title     visa_option
